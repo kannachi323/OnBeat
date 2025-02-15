@@ -28,7 +28,6 @@ elseif (WIN32)
         "C:/Users/mtcco/development/SDL3/SDL3-3.2.4"
         "C:/Users/mtcco/development/SDL3/SDL3_image-3.2.0"
         "C:/Users/mtcco/development/SDL3/SDL3_ttf-3.1.0"
-        "C:/Users/mtcco/development/SDL3/SDL2_mixer-2.8.1"
     )
 
     set(PROJECT_DIR "C:/Users/mtcco/projects/OnBeat")
@@ -36,15 +35,34 @@ elseif (WIN32)
     find_package(SDL3 REQUIRED CONFIG)
     find_package(SDL3_image REQUIRED CONFIG)
     find_package(SDL3_ttf REQUIRED CONFIG)
-    find_package(SDL2_mixer REQUIRED CONFIG)
     
-    add_executable(OnBeat main.cpp NotesManager.cpp)
+    add_executable(OnBeat 
+        main.cpp 
+        Game.cpp
+        ScreenManager.cpp
+        MainMenu.cpp
+        MapSelect.cpp
+        NotesManager.cpp
+        Transitions.cpp
+    )
 
     add_custom_command(TARGET OnBeat POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${PROJECT_DIR}/bin"
             "$<TARGET_FILE_DIR:OnBeat>"
     )
+
+    add_custom_command(TARGET OnBeat POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${PROJECT_SOURCE_DIR}/assets"
+        "$<TARGET_FILE_DIR:OnBeat>/assets"
+    )
+
+    add_custom_command(TARGET OnBeat POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${PROJECT_SOURCE_DIR}/media"
+        "$<TARGET_FILE_DIR:OnBeat>/media"
+)
 
     target_link_libraries(
         OnBeat PRIVATE

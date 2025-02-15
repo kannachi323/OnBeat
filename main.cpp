@@ -1,12 +1,15 @@
-#include <SDL.h>
-#include <SDL_image.h>
-#include <SDL_ttf.h>
+#include <SDL3/SDL.h>
+#include <SDL3_image/SDL_image.h>
+#include <SDL3_ttf/SDL_ttf.h>
 #include <iostream>
+#include "NotesManager.h"
+
 
 const int WINDOW_WIDTH = 800;
 const int WINDOW_HEIGHT = 600;
 const int CIRCLE_RADIUS = 30;
 const int SPEED = 3; // Speed of movement
+static Mix_Chunk *g_wave = nullptr;
 
 void DrawCircle(SDL_Renderer* renderer, int x, int y, int radius) {
     for (int w = 0; w < radius * 2; w++) {
@@ -20,6 +23,44 @@ void DrawCircle(SDL_Renderer* renderer, int x, int y, int radius) {
     }
 }
 
+void createMap() {
+    NotesManagerConfig nmcf = {"example.nm", 120, 9};
+    NotesManager nm(&nmcf);
+   
+    Note note = {LANE_2, LEFT, QUARTER, 0};  // Start with the first quarter note at timestamp 0
+    for (uint8_t i = 0; i < 4; ++i) {
+        nm.addNote(note);
+        note.timestamp = nm.getNextNoteTimestamp();
+    }
+
+    // 8 Eighth Notes
+    note = {LANE_4, RIGHT, EIGHTH, note.timestamp};  // Start with the first eighth note at the last timestamp
+    for (uint8_t i = 0; i < 8; ++i) {
+        nm.addNote(note);
+        note.timestamp = nm.getNextNoteTimestamp();
+    }
+
+    // 16 Sixteenth Notes
+    note = {LANE_2, LEFT, TRIPLET, note.timestamp};  // Start with the first sixteenth note at the last timestamp
+    for (uint8_t i = 0; i < 12; ++i) {
+        nm.addNote(note);
+        note.timestamp = nm.getNextNoteTimestamp();
+    } 
+    note = {LANE_1, LEFT, SIXTEENTH, note.timestamp};
+    for (uint8_t i = 0; i < 16; ++i) {
+        nm.addNote(note);
+        note.timestamp = nm.getNextNoteTimestamp();
+    }
+    //downbeat
+    nm.addNote(note);
+    
+    nm.saveNotesFile();
+
+    nm.readNotesFile();
+    nm.printNotes();
+    nm.playNotes();    
+}
+
 int main() {
     SDL_Window *window;
     SDL_Renderer *renderer;
@@ -27,7 +68,9 @@ int main() {
     SDL_Texture *texture;
     SDL_Event event;
     int width, height;
-
+    
+    createMap();
+    
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "issues with init video");
         return 2;

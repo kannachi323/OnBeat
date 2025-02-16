@@ -1,7 +1,7 @@
 #include "NotesManager.h"
 #include <iostream>
 #include <cstdio>
-#include <SDL3/SDL.h>
+#include <SDL.h>
 #include <windows.h>
 
 NotesManager::NotesManager(NotesManagerConfig* nmcf) : _fileName(nmcf->fileName), _fp(nullptr), 

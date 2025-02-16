@@ -1,81 +1,96 @@
 #include "MapSelect.h"
 
-MapSelect::MapSelect(SDL_Window* window, SDL_Renderer* renderer) : _bg(nullptr), _spriteSheet(nullptr), _renderer(renderer),
-_window(window), _isInTransition(false) {
-    _bg = IMG_LoadTexture(_renderer, "media/dark_bg.jpg");
-    if (!_bg) {
-        std::cerr << "Failed to load bg" << std::endl;
-        return;
-    }
-    _spriteSheet = IMG_LoadTexture(_renderer, "assets/skins/default");
-    _isInTransition = true;
-    enter();
-    _isInTransition = false;
-}
+MapSelect MapSelect::_mapSelect;
 
-MapSelect::~MapSelect() {
-    
-
-}
-
-void MapSelect::handleInput(SDL_Event event) {
-    if (_isInTransition) return;
-    ScreenManager &sm = ScreenManager::getInstance();
-    sm.printScreens();
-    switch (event.type) {
-        case SDL_EVENT_QUIT:
-            break;
-        case SDL_EVENT_MOUSE_BUTTON_DOWN:
-            if (event.button.button == SDL_BUTTON_RIGHT) {
-                _isInTransition = true;
-                exit();
-                _isInTransition = false;
-                sm.popScreen();
-            }
-    
-    }
-    
-}
-
-void MapSelect::update(float deltaTime) {
-    std::cout << "Updating Main Menu" << std::endl;
-}
-
-void MapSelect::render() {
-    SDL_RenderClear(_renderer);
-
-    Background();
-
-
-    SDL_RenderPresent(_renderer);
+MapSelect* MapSelect::get() {
+    return &_mapSelect;
 }
 
 void MapSelect::enter() {
-    _isInTransition = true;
-    fadeTransition(_renderer, _window, 200, -1, &MapSelect::renderFunc, this); 
-    _isInTransition = false;
+    AssetManager *am = AssetManager::get();
+    am->loadTexture("bg", "media/dark_bg.jpg");
 }
 
 void MapSelect::exit() {
-    _isInTransition = true;
-    fadeTransition(_renderer, _window, 200, 1, &MapSelect::renderFunc, this); 
-    _isInTransition = false;
+    SDL_DestroyTexture(_bg);
+    SDL_DestroyTexture(_spriteSheet);
 }
 
-bool MapSelect::isInTransition() {
-    return _isInTransition;
-}
 
-//Helper Funcs
-void MapSelect::Background() {
-    SDL_FRect srcRect = {0, 0, 2048, 2048};
-    int w, h;
-    SDL_GetWindowSize(_window, &w, &h);
+void MapSelect::handleInput(SDL_Event event) {
+    AudioManager *am =  AudioManager::get();
+    switch (event.type) {
+        case SDL_QUIT:
+            //we should get to an exit state
+            break;
+        case SDL_MOUSEBUTTONDOWN:
+            if (event.button.button == SDL_BUTTON_RIGHT) {
+                _nextScreen = MainMenu::get();
+            }
+        case SDL_KEYDOWN:
+            switch (event.key.keysym.sym) {
+                case SDLK_q:
+                    if (event.key.repeat == 0) {
+                        am->playSound("media/drum-hitnormal.wav");
+                    }
+                    break;
+                case SDLK_w:
+                    if (event.key.repeat == 0) {
+                        am->playSound("media/drum-hitnormal.wav");
+                    }
+                    break;
+                case SDLK_e:
+                    if (event.key.repeat == 0) {
+                        am->playSound("media/drum-hitnormal.wav");
+                    }
+                    break;
+                case SDLK_f:
+                    if (event.key.repeat == 0) {
+                        am->playSound("media/drum-hitnormal.wav");
+                    }
+                    break;
+                case SDLK_p:
+                    if (event.key.repeat == 0) {
+                        am->playSound("media/drum-hitnormal.wav");
+                    }
+                    break;
+                case SDLK_o:
+                    if (event.key.repeat == 0) {
+                        am->playSound("media/drum-hitnormal.wav");
+                    }
+                    break;
+                case SDLK_i:
+                    if (event.key.repeat == 0) {
+                        am->playSound("media/drum-hitnormal.wav");
+                    }
+                    break;
+                case SDLK_j:
+                    if (event.key.repeat == 0) {
+                        am->playSound("media/drum-hitnormal.wav");
+                    }
+                    break;
+            }
+            break;
+            
     
-    SDL_FRect dstRect = {0, 0, (float)w, (float)h};
-
-    SDL_RenderTexture(_renderer, _bg, &srcRect, &dstRect);
+    }
 }
 
+void MapSelect::update(Screen **nextScreen) {
+    if (_nextScreen != nullptr) {
+        *nextScreen = _nextScreen;
+        _nextScreen = nullptr;
+    }
 
+    //do other update stuff
+}
+
+void MapSelect::render() {
+    AssetManager *am = AssetManager::get();
+    am->renderTexture("bg", 0, 0, 800, 600);
+
+    //do other render stuff
+    std::cout << "Rendering main menu" << std::endl;
+
+}
 

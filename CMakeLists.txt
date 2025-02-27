@@ -4,24 +4,39 @@ project(OnBeat)
 set(CMAKE_CXX_STANDARD 20)
 
 if (APPLE) 
-    set(SDL3 "/Library/Frameworks/SDL3.framework")
-    set(SDL3_image "/Library/Frameworks/SDL3_image.framework")
-    set(SDL3_ttf "/Library/Frameworks/SDL3_ttf.framework")
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
+    set(SDL2 "/Library/Frameworks/SDL2.framework")
+    set(SDL2_image "/Library/Frameworks/SDL2_image.framework")
+    set(SDL2_ttf "/Library/Frameworks/SDL2_ttf.framework")
+    set(SDL2_mixer "/Library/Frameworks/SDL2_mixer.framework")
 
-    add_executable(OnBeat main.cpp)
+    add_executable(OnBeat 
+        main.cpp 
+        Game.cpp
+        manager/game/MapManager.cpp
+        manager/game/NotesManager.cpp
+        manager/resources/AssetManager.cpp
+        manager/resources/AudioManager.cpp
+        manager/graphics/RenderManager.cpp
+        screens/MapGrid.cpp
+        screens/MainMenu.cpp
+        screens/MapSelect.cpp
+    )
 
     target_link_libraries(
         OnBeat PRIVATE
-        ${SDL3}/Versions/A/SDL3
-        ${SDL3_image}/Versions/A/SDL3_image
-        ${SDL3_ttf}/Versions/A/SDL3_ttf
+        ${SDL2}/Versions/A/SDL2
+        ${SDL2_image}/Versions/A/SDL2_image
+        ${SDL2_ttf}/Versions/A/SDL2_ttf
+        ${SDL2_mixer}/Versions/A/SDL2_mixer
     )
 
     target_include_directories(
         OnBeat PRIVATE
-        "${SDL3}/Versions/A/Headers"
-        "${SDL3_image}/Versions/A/Headers"
-        "${SDL3_ttf}/Versions/A/Headers"
+        "${SDL2}/Headers"
+        "${SDL2_image}/Headers"
+        "${SDL2_ttf}/Headers"
+        "${SDL2_mixer}/Headers"
     )
 elseif (WIN32)
     set(CMAKE_PREFIX_PATH 
@@ -41,10 +56,11 @@ elseif (WIN32)
     add_executable(OnBeat 
         main.cpp 
         Game.cpp
-        AssetManager.cpp
-        AudioManager.cpp
-        MainMenu.cpp
-        MapSelect.cpp
+        manager/AssetManager.cpp
+        manager/AudioManager.cpp
+        manager/graphics/RenderManager.cpp
+        screen/MainMenu.cpp
+        screen/MapSelect.cpp
         NotesManager.cpp
     )
 

@@ -2,29 +2,29 @@
 
 Game::Game() : _window(nullptr), _renderer(nullptr), _currentScreen(nullptr), _nextScreen(nullptr) {
     initVideo();
+    initRenderer();
     initAudio();
-    initStyles();
     initAssets();
+    initMaps();
 }
 
 Game::~Game() { 
+    if (_currentScreen != nullptr) {
+        _currentScreen->exit();
+    }
+    if (_nextScreen != nullptr) {
+        _nextScreen->exit();
+    }
+    AssetManager *am = AssetManager::get();
+    am->cleanUp();
+    AudioManager *audioManager = AudioManager::get();
+    audioManager->cleanUp();
     TTF_CloseFont(_font);   
     TTF_Quit();
     SDL_DestroyRenderer(_renderer);
     SDL_DestroyWindow(_window);
     SDL_Quit();
 }
-
-void Game::initStyles() {
-    if (TTF_Init() < 0) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "issues with init ttf");
-    }
-    _font = TTF_OpenFont("/Library/Fonts/Arial Unicode.ttf", 24);
-    if (!_font) {
-        std::cout << "error opening font" << std::endl;
-    }
-}
-
 
 void Game::initAudio() {
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 64) < 0) {
@@ -46,18 +46,32 @@ void Game::initVideo() {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Error creating window: %s", SDL_GetError());
         return;
     }
+}
 
+void Game::initRenderer() {
     _renderer = SDL_CreateRenderer(_window, -1, 0);
     if (!_renderer) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Error creating renderer: %s", SDL_GetError());
         SDL_DestroyWindow(_window);
         return;
     }
+    RenderManager *rm = RenderManager::get();
+    rm->init(_renderer);
 }
 
 void Game::initAssets() {
+    if (TTF_Init() < 0) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "issues with init ttf");
+    }
     AssetManager *am = AssetManager::get();
+    
     am->init(_window, _renderer);
+
+    am->loadFont("arial", "media/arial.ttf", 24);
+}
+
+void Game::initMaps() {
+    
 }
 
 void Game::changeScreen() {
@@ -68,9 +82,9 @@ void Game::changeScreen() {
 }
 
 void Game::runGame() {
-    _currentScreen = MainMenu::get();
+    _currentScreen = MapGrid::get();
     if (_currentScreen == nullptr) {
-        std::cout << "nigga" << std::endl;
+        std::cout << "no screen available" << std::endl;
         return;
     }
     _currentScreen->enter();
@@ -96,14 +110,10 @@ void Game::runGame() {
         
         SDL_RenderClear(_renderer);
 
-        std::cout << "got after reset" << std::endl;
 
         _currentScreen->render();
 
-        std::cout << "got it to render" << std::endl;
 
         SDL_RenderPresent(_renderer);
     }
-     
-   
 }

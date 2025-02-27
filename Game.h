@@ -2,20 +2,26 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
-#include "AudioManager.h"
-#include "MainMenu.h"
-#include "AssetManager.h"
+#include <filesystem>
+#include <memory>
+#include "manager/resources/AudioManager.h"
+#include "manager/resources/AssetManager.h"
+#include "manager/graphics/RenderManager.h"
+#include "manager/game/MapManager.h"
+#include "manager/game/NotesManager.h"
+#include "screens/MapGrid.h"
+
 
 class Game {
 public:
     Game();
     ~Game();
     void initVideo();
+    void initRenderer();
     void initAudio();
     void initMaps();
-    void initStyles();
-    void initScreens();
     void initAssets();
+    void initScreens();
     void runGame();
     void changeScreen();
     

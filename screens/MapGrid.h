@@ -1,4 +1,5 @@
 #pragma once
+#include <thread>
 #include <SDL.h>
 #include <SDL_image.h>
 #include "Screen.h"
@@ -33,6 +34,10 @@ class MapGrid : public Screen {
        
         Screen *_nextScreen;
 
-        uint16_t _startTime;
+        Note* _currNote;
+        float _startTime;
+        float _noteStartTime;
+        uint16_t _noteCount;
+
         
 };

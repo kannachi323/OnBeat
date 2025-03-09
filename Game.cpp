@@ -9,6 +9,7 @@ Game::Game() : _window(nullptr), _renderer(nullptr), _currentScreen(nullptr), _n
 }
 
 Game::~Game() { 
+    //TODO: clean up all resources through their respective managers
     if (_currentScreen != nullptr) {
         _currentScreen->exit();
     }
@@ -36,27 +37,15 @@ void Game::initAudio() {
 }
 
 void Game::initVideo() {
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "issues with init video");
-        std::cout << SDL_GetError() << std::endl;
-        return;
-    }
-    _window = SDL_CreateWindow("OnBeat", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, 0);
-    if (!_window) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Error creating window: %s", SDL_GetError());
-        return;
-    }
+    WindowManager *windowManager = WindowManager::get();
+    windowManager->init();
+    windowManager->getWindow(&_window);
 }
 
 void Game::initRenderer() {
-    _renderer = SDL_CreateRenderer(_window, -1, 0);
-    if (!_renderer) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Error creating renderer: %s", SDL_GetError());
-        SDL_DestroyWindow(_window);
-        return;
-    }
-    RenderManager *rm = RenderManager::get();
-    rm->init(_renderer);
+    RenderManager *renderManager = RenderManager::get();
+    renderManager->init(_window);
+    renderManager->getRenderer(&_renderer);
 }
 
 void Game::initAssets() {
@@ -67,7 +56,7 @@ void Game::initAssets() {
     
     am->init(_window, _renderer);
 
-    am->loadFont("arial", "media/arial.ttf", 24);
+    am->loadFont("arial", "media/Arial.ttf", 24);
 }
 
 void Game::initMaps() {
@@ -94,6 +83,8 @@ void Game::runGame() {
             _currentScreen->handleInput(_event);
             if (_event.type == SDL_QUIT) {
                 _currentScreen = nullptr;
+                std::cout << "quit" << std::endl;
+                break;
             }
         }
 

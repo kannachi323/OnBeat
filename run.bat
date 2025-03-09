@@ -1,11 +1,5 @@
 @echo off
 
-:: Remove the previous build directory
-rmdir /s /q build
-
-:: Create a new build directory
-mkdir build
-
 :: Run CMake to generate build files
 cmake -B build -G "MinGW Makefiles"
 
@@ -16,9 +10,6 @@ cmake --build build
 if exist build\OnBeat.exe (
     echo Build succeeded, starting the program...
     cd build
-    start OnBeat.exe
 ) else (
     echo Build failed. OnBeat.exe not found.
 )
-
-pause

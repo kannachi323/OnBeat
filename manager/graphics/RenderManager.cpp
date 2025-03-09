@@ -6,12 +6,20 @@ RenderManager* RenderManager::get() {
     return &_rm;
 }
 
-void RenderManager::init(SDL_Renderer *renderer) {
-    _renderer = renderer;
+void RenderManager::init(SDL_Window *window) {
+    _renderer = SDL_CreateRenderer(window, -1, 0);
+    if (!_renderer) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Error creating renderer: %s", SDL_GetError());
+        return;
+    }
 }
 
 void RenderManager::cleanUp() {
   
+}
+
+void RenderManager::getRenderer(SDL_Renderer** renderer) {
+    *renderer = _renderer;
 }
 
 void RenderManager::renderLine(int x1, int y1, int x2, int y2) {

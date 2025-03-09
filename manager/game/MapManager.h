@@ -3,6 +3,8 @@
 #include <SDL_image.h>
 #include <fstream>
 #include <iostream>
+#include <vector>
+#include <algorithm> 
 
 struct MapConfig {
     const char* FILE_NAME;

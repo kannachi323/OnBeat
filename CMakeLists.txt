@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 project(OnBeat)
 
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_FLAGS "-g")
 
 if (APPLE) 
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
@@ -56,12 +57,15 @@ elseif (WIN32)
     add_executable(OnBeat 
         main.cpp 
         Game.cpp
-        manager/AssetManager.cpp
-        manager/AudioManager.cpp
+        manager/game/MapManager.cpp
+        manager/game/NotesManager.cpp
+        manager/resources/AssetManager.cpp
+        manager/resources/AudioManager.cpp
         manager/graphics/RenderManager.cpp
-        screen/MainMenu.cpp
-        screen/MapSelect.cpp
-        NotesManager.cpp
+        manager/graphics/WindowManager.cpp
+        screens/MapGrid.cpp
+        screens/MainMenu.cpp
+        screens/MapSelect.cpp
     )
 
     add_custom_command(TARGET OnBeat POST_BUILD
@@ -80,6 +84,12 @@ elseif (WIN32)
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${PROJECT_SOURCE_DIR}/media"
         "$<TARGET_FILE_DIR:OnBeat>/media"
+    )
+    
+    add_custom_command(TARGET OnBeat POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${PROJECT_SOURCE_DIR}/maps"
+        "$<TARGET_FILE_DIR:OnBeat>/maps"
     )   
 
     target_link_libraries(
@@ -89,7 +99,5 @@ elseif (WIN32)
         SDL2_ttf::SDL2_ttf
         SDL2_mixer::SDL2_mixer
     )
-
-    
 
 endif()

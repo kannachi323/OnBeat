@@ -7,9 +7,11 @@ MapGrid* MapGrid::get() {
 }
 
 void MapGrid::enter() {
+    _startTime = 0;
     _assetManager = AssetManager::get();
-    _assetManager->loadTexture("dark_bg", "media/dark_bg.jpg");
+    _assetManager->loadTexture("menu-bg", "media/menu_bg.jpg");
     _assetManager->loadTexture("hit-circle-fill", "media/hit-circle-fill.png");
+    _assetManager->loadTexture("hit-circle", "media/hit-circle.png");
     
     SDL_Color color = {255, 255, 255, 255};
     _assetManager->loadFontTexture("arial", "score-label", "Score: 0", color);
@@ -20,9 +22,15 @@ void MapGrid::enter() {
     _renderManager = RenderManager::get();
 
     _notesManager = new NotesManager();
-    _notesManager->loadNotes("maps/jashin/jashin.notes");
-    std::cout << "Loaded notes" << std::endl;
-    _notesManager->printNotes();
+    if (!_notesManager) {
+        std::cout << "Error: Could not create notes manager" << std::endl;
+        return;
+    }
+    
+    std::thread loadNotesThread(&NotesManager::loadNotes, _notesManager, "maps/jashin/jashin.notes");
+    loadNotesThread.join();
+    std::cout << "Notes size: " << _notesManager->getNotes().size() << std::endl;
+    
 }
 
 void MapGrid::exit() {
@@ -38,6 +46,9 @@ void MapGrid::handleInput(SDL_Event event) {
             switch (event.key.keysym.sym) {
                 case SDLK_RETURN:
                     _startTime = SDL_GetTicks();
+                    _noteCount = 0;
+                    std::cout << "start time: " << _startTime << std::endl;
+                    break;
                 case SDLK_q:
                     if (event.key.repeat == 0) {
                         _audioManager->playSound("media/hit.wav");
@@ -100,15 +111,11 @@ void MapGrid::render() {
 }
 
 void MapGrid::renderNotes() {
-    SDL_Texture* hitCircleFill = _assetManager->getTexture("hit-circle-fill");
-    _notesManager->printNotes();
-    
+  
 }
-
 void MapGrid::renderGrid(int width, int height){
-    SDL_Texture* darkBg = _assetManager->getTexture("dark_bg");
+    SDL_Texture* darkBg = _assetManager->getTexture("menu-bg");
     _renderManager->renderTexture(darkBg, 0, 0, width, height);
-
     int posX = width / 2;
 
     _renderManager->renderLine(posX, 0, posX, height);
@@ -121,7 +128,9 @@ void MapGrid::renderGrid(int width, int height){
 
 void MapGrid::renderScore(int width, int height) {
     SDL_Texture* scoreLabel = _assetManager->getTexture("score-label");
-
-    _renderManager->renderRectOutline(width - 75, 0, 64, 32);
-    _renderManager->renderTexture(scoreLabel, width - 75, 0, 64, 32);
+    if (scoreLabel) {
+        _renderManager->renderRectOutline(width - 75, 0, 64, 32);
+        _renderManager->renderTexture(scoreLabel, width - 75, 0, 64, 32);
+    }
+    
 }

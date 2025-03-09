@@ -8,10 +8,10 @@ MainMenu* MainMenu::get() {
 
 void MainMenu::enter() {
     AssetManager *am = AssetManager::get();
-    am->loadTexture("bg", "/media/dark_bg.jpg");
+    am->loadTexture("bg", "media/dark_bg.jpg");
 
     AudioManager *audioManager = AudioManager::get();
-    audioManager->playMusic("/media/jashin.mp3");
+    audioManager->playMusic("media/jashin.mp3");
 }
 
 void MainMenu::exit() {

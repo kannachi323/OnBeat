@@ -3,13 +3,17 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <filesystem>
+#include <iostream>
 #include <memory>
 #include "manager/resources/AudioManager.h"
 #include "manager/resources/AssetManager.h"
 #include "manager/graphics/RenderManager.h"
+#include "manager/graphics/WindowManager.h"
 #include "manager/game/MapManager.h"
 #include "manager/game/NotesManager.h"
 #include "screens/MapGrid.h"
+#include "screens/MainMenu.h"
+
 
 
 class Game {
